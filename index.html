@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IMD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Mukta:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#7a1f2b;--wine-dark:#5b1626;--gold:#c8902e;--gold-soft:#e6c27a;--mist:#f6ecee;--paper:#fffaf2;--ink:#2a2140;--serif:'Tiro Devanagari Hindi',Georgia,serif;--sans:'Mukta',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--mist);min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-2;background:var(--mist)}
+.bg::before{content:"";position:absolute;inset:0;background:url("dipanshu.jpg") center 30%/cover no-repeat;opacity:.22;filter:saturate(.85) blur(1px)}
+.bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(246,236,238,0) 0%,rgba(246,236,238,.75) 100%),linear-gradient(to bottom,rgba(246,236,238,.35),rgba(246,236,238,.7))}
+.hero{text-align:center;padding:9vh 22px 2vh}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,9vw,4.6rem);color:var(--wine-dark);line-height:1.15}
+.hero .sub{margin-top:.9rem;font-size:1.05rem;color:var(--ink);opacity:.8;letter-spacing:.02em}
+.hero .meaning{margin:.55rem auto 0;max-width:38rem;font-size:.98rem;line-height:1.6;color:var(--wine);opacity:.9}
+.hero .line{width:64px;height:2px;background:var(--gold);margin:1.4rem auto 0;border-radius:2px}
+.stage{display:flex;flex-direction:column;align-items:center;padding:6vh 20px 10vh;perspective:900px}
+.hint{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--serif);font-style:italic;font-size:1.25rem;color:var(--wine);margin-bottom:10px;transition:opacity .4s}
+.hint svg{width:34px;height:46px;animation:nudge 1.3s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(9px)}}
+.stage.opened .hint{opacity:0;pointer-events:none}
+.env{--w:min(80vw,360px);width:var(--w);height:calc(var(--w)*.64);position:relative;cursor:pointer;border:0;background:none;margin-top:70px;filter:drop-shadow(0 18px 24px rgba(91,22,38,.28));-webkit-tap-highlight-color:transparent}
+.env:focus-visible{outline:3px solid var(--gold);outline-offset:10px;border-radius:8px}
+.env-back{position:absolute;inset:0;background:var(--wine-dark);border-radius:6px}
+.env-card{position:absolute;left:7%;right:7%;top:8%;height:86%;background:var(--paper);border:1px solid var(--gold-soft);border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.25rem;color:var(--wine);z-index:1;transition:transform .9s cubic-bezier(.3,.8,.3,1) .55s}
+.env.open .env-card{transform:translateY(-68%)}
+.env-card::after{content:"";position:absolute;inset:6px;border:1px solid var(--gold-soft);border-radius:2px}
+.pocket{position:absolute;inset:0;z-index:2;pointer-events:none}
+.pocket i{position:absolute;inset:0;display:block}
+.pocket .l{background:#8a2634;clip-path:polygon(0 0,52% 56%,0 100%)}
+.pocket .r{background:#8a2634;clip-path:polygon(100% 0,48% 56%,100% 100%)}
+.pocket .b{background:var(--wine);clip-path:polygon(0 100%,50% 44%,100% 100%);border-radius:0 0 6px 6px}
+.flap{position:absolute;left:0;top:0;width:100%;height:62%;background:linear-gradient(#933040,#7a1f2b);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;transition:transform .6s ease,z-index 0s .3s;z-index:3}
+.env.open .flap{transform:rotateX(180deg);z-index:0;background:#5b1626}
+.seal{position:absolute;left:50%;top:52%;width:44px;height:44px;margin:-22px 0 0 -22px;z-index:4;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f0cf86,var(--gold) 70%);display:flex;align-items:center;justify-content:center;color:var(--wine-dark);font-family:var(--serif);font-size:1.25rem;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:opacity .3s}
+.env.open .seal{opacity:0}
+.overlay{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(42,33,64,.45);backdrop-filter:blur(3px)}
+.overlay.show{display:flex;animation:fade .5s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.letter{width:min(100%,580px);max-height:88vh;overflow:auto;background:var(--paper);border-radius:4px;padding:clamp(28px,6vw,48px) clamp(24px,6vw,48px);position:relative;box-shadow:0 30px 60px rgba(0,0,0,.35);animation:rise .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:translateY(40px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.letter h2{font-family:var(--serif);font-weight:400;font-size:1.9rem;color:var(--wine-dark);margin-bottom:1.1rem}
+.letter p{font-size:1.1rem;line-height:1.85;margin-bottom:1rem;max-width:62ch;white-space:pre-line}
+.letter .from{font-family:var(--serif);font-style:italic;color:var(--wine);margin-top:1.4rem;font-size:1.2rem}
+.letter p,.letter h2,.letter .from{opacity:0;animation:line .7s ease forwards}
+@keyframes line{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.close{position:absolute;top:14px;right:16px;z-index:2;width:38px;height:38px;border-radius:50%;border:0;background:transparent;font-size:1.7rem;color:var(--wine);cursor:pointer;line-height:1}
+.close:hover{background:rgba(122,31,43,.08)}
+.songs{max-width:720px;margin:0 auto;padding:4vh 22px 14vh}
+.songs h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,6vw,2.4rem);color:var(--wine-dark)}
+.songs .lead{margin:.6rem 0 2rem;opacity:.8;line-height:1.7;max-width:56ch}
+.song{border-top:1px solid rgba(122,31,43,.22);padding:1rem 0}
+.song:last-child{border-bottom:1px solid rgba(122,31,43,.22)}
+.song-row{display:flex;align-items:center;gap:1rem}
+.song-number{font-family:var(--serif);font-size:1.25rem;line-height:1.2;color:var(--gold);width:2.2rem;flex:none;text-align:center}
+.meta{flex:1;min-width:0}.meta b{display:block;font-family:var(--serif);font-weight:400;font-size:1.2rem;color:var(--ink)}.meta span{font-size:.92rem;opacity:.7}
+.play{flex:none;border:1px solid var(--wine);background:transparent;color:var(--wine);padding:.5rem 1.05rem;border-radius:999px;font:inherit;font-size:.95rem;cursor:pointer;transition:background .2s,color .2s}
+.play:hover{background:var(--wine);color:#fff}.play:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.player{margin-top:.9rem;aspect-ratio:16/9;width:100%;border-radius:6px;overflow:hidden;background:#000;display:none}.player.on{display:block}.player iframe{width:100%;height:100%;border:0}
+footer{text-align:center;padding:0 20px 8vh;font-family:var(--serif);font-style:italic;color:var(--wine);opacity:.85}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}.letter p,.letter h2,.letter .from{opacity:1}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<header class="hero"><h1 id="name">Aapke pyaare se naam ka pyaara sa meaning</h1><p class="sub">To a beautiful soul who is a little like a sunflower, always carrying warmth; a little like the moon, quietly making the darkest nights beautiful; and a ray of light whose presence makes this world brighter. May you never forget that your smile brings its own kind of sunshine and makes life a little more beautiful for the people lucky enough to know you.</p><p class="meaning">Aapke naam mein do bahut khoobsurat ehsaas chhupe hain: “Deep” (दीप), yaani ek diya jo roshni deta hai, aur “Anshu” (अंशु), yaani roshni ki ek nanhi si kiran. Dono milkar ek aise insaan ka ehsaas dete hain, jinki maujoodgi apne aas-paas umeed, sukoon aur khushi ki roshni bhar deti hai. Sach kahun, aapke naam ka matlab bhi aapki tarah hi pyaara hai. ❤️</p><div class="line"></div></header>
+<section class="stage" id="stage">
+  <div class="hint" aria-hidden="true"><span>Ise kholiye</span><svg viewBox="0 0 34 46" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 C 9 14, 24 20, 16 32"/><path d="M8 27 L16 38 L25 28"/></svg></div>
+  <button class="env" id="env" aria-label="Envelope kholiye"><div class="env-back"></div><div class="env-card" id="envCard">You are the best</div><div class="pocket"><i class="l"></i><i class="r"></i><i class="b"></i></div><div class="flap"></div><div class="seal">✦</div></button>
+</section>
+<section class="songs" id="songs"><h2>A few song that i dedicate it to you</h2><p class="lead" id="songLead"></p><div id="songList"></div></section>
+<footer id="footer"></footer>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="letterTitle"><div class="letter" id="letter"><button class="close" id="close" aria-label="Band kijiye">&times;</button></div></div>
+<script>
+/* =====================================================
+   EDIT THIS PART ONLY
+   ===================================================== */
+const CONFIG = {
+  letterTitle: "Aapke Liye",
+  from: "– Your Admirer",
+  message: [
+    `Happy International Men's Day! ❤️
+
+Everyone gets so hyped about Women's Day. There are celebrations, so many activities and so much being talked about. But very few people actually know about or talk about Men's Day in the same way.`,
+    `People often think men are responsible for everything that goes wrong, but I genuinely don't think that's fair. Men are, in so many ways, the biggest supporters of women. Without the love, support and sacrifices of the men in our lives, a woman's life wouldn't be the same. Many people say that if there were no men, the world would be a better place. But they probably don't realise how much men, in every role and every form, think about the women they know, their families, and the dreams and happiness of the people around them.`,
+    `Society expects men to behave in a certain way. It makes them mature even before their age. They often put aside their own dreams and take every responsibility with so much care, love and dedication. And honestly, you are one of the best examples of that.`,
+    `The way you treat every woman with so much dignity, the way you take responsibility, the way you silently make sacrifices for your family, and how you try to be the best son, brother, grandson, a good friend and, yes, a wonderful husband to your beautiful future wife. I have genuinely never come across someone as sweet, humble and gentlemanly as you.`,
+    `You are someone who deserves so much admiration.`,
+    `Mei Bhagwan ji se hamesha pray karti hu ki aapko bas har samay khush rakhein. Aap apne andar kitna kuch sochte honge, kitne saare emotions aur responsibilities lekar chalte honge. Silently kitne sacrifices karte honge. Mei toh ladki hu, ro leti hu, aapke saamne ro leti hu aur thoda apna mann halka kar leti hu. Aur aap itne achhe hain ki mujhe hamesha itne pyaar aur patience se treat karte hain.`,
+    `Aapne aaj tak mere liye bahut kuch kiya hai. Aap bahut achhe hain, aur mei aapki bahut respect karti hu.`,
+    `Aap jaise hain, waise bahut kam log hote hain. Aap bahut sundar hain, sirf bahar se nahi, balki apne thoughts, nature aur personality se bhi. Aap mein bahut potential hai. Aap ek standard set karte hain. In fact, aap hi mere liye ek achhe insaan aur ek achhe man ki definition hain.`,
+    `And honestly, aapko jaana, aapse milna meri life ki best achievements mein se ek hamesha rahega.`,
+    `Jaise log PM ya kisi actor se milkar khush hote hain, waise hi shayad unhe pata nahi ki aap jaise pyaare aur genuine insaan bhi is duniya mein hain. Aapse milkar bhi log utna hi special feel kar sakte hain.`,
+    `I genuinely wish you all the happiness, peace and success in life. You deserve so much more appreciation than you probably receive. ❤️`
+  ],
+  songsLead: "Ye gaane maine sirf aapke liye chuney hain. Aaraam se sunkar dekhiye.",
+  songs: [
+    {title:"Aap Ki Nazron Ne Samjha",film:"Anpadh",singer:"Lata Mangeshkar",yt:"Wv-VlQMD0VY"},
+    {title:"Rahe Na Rahe Hum",film:"Mamta",singer:"Lata Mangeshkar",yt:"0SJVwVDmDSU"},
+    {title:"Aap Yun Faaslon Se Guzarte Rahe",film:"Shankar Hussain",singer:"Lata Mangeshkar",yt:"Mn9HQshYABI"}
+  ]
+};
+/* ===================================================== */
+const $ = id => document.getElementById(id);
+document.title = "IMD";
+$("name").textContent = "Aapke pyaare se naam ka pyaara sa meaning";
+$("songLead").textContent = CONFIG.songsLead;
+$("footer").textContent = CONFIG.from;
+const letter = $("letter");
+function buildLetter(){
+  [...letter.querySelectorAll("h2,p,.from")].forEach(n=>n.remove());
+  let delay=.35;
+  const add=(el,text)=>{el.textContent=text;el.style.animationDelay=delay+"s";delay+=.55;letter.appendChild(el)};
+  const heading=document.createElement("h2");heading.id="letterTitle";add(heading,CONFIG.letterTitle);
+  CONFIG.message.forEach(paragraph=>add(document.createElement("p"),paragraph));
+  const signature=document.createElement("div");signature.className="from";add(signature,CONFIG.from);
+}
+const env=$("env"),stage=$("stage"),overlay=$("overlay");
+function openEnvelope(){
+  stage.classList.add("opened");
+  env.classList.add("open");
+  window.setTimeout(()=>{buildLetter();overlay.classList.add("show");$("close").focus()},1700);
+}
+function closeLetter(){overlay.classList.remove("show");env.focus()}
+env.addEventListener("click",()=>{
+  if(!env.classList.contains("open"))openEnvelope();
+  else{buildLetter();overlay.classList.add("show")}
+});
+$("close").addEventListener("click",closeLetter);
+overlay.addEventListener("click",event=>{if(event.target===overlay)closeLetter()});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&overlay.classList.contains("show"))closeLetter()});
+const list=$("songList");
+CONFIG.songs.forEach((song,index)=>{
+  const wrap=document.createElement("div");wrap.className="song";
+  const row=document.createElement("div");row.className="song-row";
+  const number=document.createElement("div");number.className="song-number";number.textContent=String(index+1);
+  const meta=document.createElement("div");meta.className="meta";
+  const title=document.createElement("b");title.textContent=song.title;
+  const details=document.createElement("span");details.textContent=song.film+", "+song.singer;
+  meta.append(title,details);
+  const button=document.createElement("button");button.className="play";button.textContent="Suniye";
+  const player=document.createElement("div");player.className="player";
+  row.append(number,meta,button);wrap.append(row,player);list.appendChild(wrap);
+  button.addEventListener("click",()=>{
+    if(song.external){
+      window.open("https://www.youtube.com/watch?v="+song.yt,"_blank","noopener");
+      return;
+    }
+    if(!song.yt){const query=encodeURIComponent(song.title+" "+song.film+" Lata Mangeshkar song");window.open("https://www.youtube.com/results?search_query="+query,"_blank","noopener");return;}
+    const isOpen=player.classList.toggle("on");
+    if(isOpen){player.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(song.yt)+'?autoplay=1&rel=0" title="'+song.title+'" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';button.textContent="Band kijiye";}
+    else{player.innerHTML="";button.textContent="Suniye";}
+  });
+});
+</script>
+</body>
+</html>
